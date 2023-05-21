@@ -5,10 +5,10 @@
 
 # If not installed run next line:
 # install.packages("pacman")
-
+rm(list=ls())
 require(pacman)
 p_load(tidyverse, rio, janitor, ggplot2, skimr, rvest, dplyr, +
-         tidyr, tibble, data.table, stargazer, outreg)
+         tidyr, tibble, data.table, stargazer, outreg, coefplot, xlsx)
 rm(list=ls())
 
 #1.Regresiones.
@@ -30,3 +30,11 @@ m3 <- lm(price~tipo+bathrooms+rooms+surface_total+dist_cole+dist_park, data=data
 #1.2 Tabla resultados:
 fitlist <- list(m1, m2, m3)
 regs <- outreg(fitlist)
+
+#coefplots:
+plot <- multiplot(m1,m2,m3, title = "Estimación modelos",xlab = "Valor estimación del parámetro")
+ggsave("output/plot_regresiones.png")
+
+export(regs, "output/resultados_regresiones.xlsx")
+
+#2.
