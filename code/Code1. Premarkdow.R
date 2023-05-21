@@ -8,7 +8,7 @@
 
 require(pacman)
 p_load(tidyverse, rio, janitor, ggplot2, skimr, rvest, dplyr, +
-         tidyr, tibble, data.table, stargazer)
+         tidyr, tibble, data.table, stargazer, outreg)
 rm(list=ls())
 
 #1.Regresiones.
@@ -22,4 +22,11 @@ m1 <- lm(price~rooms+bathrooms+surface_total, data=datareg)
 
 #Segundo modelo
 datareg <- mutate(datareg, tipo = ifelse(property_type == "Casa", 0, 1))
-m2 <- lm(price~tipo+bathrooms+rooms+surface_total, data=datareg)
+m2 <- lm(price~rooms+bathrooms+tipo+surface_total, data=datareg)
+
+#Tercer modelo
+m3 <- lm(price~tipo+bathrooms+rooms+surface_total+dist_cole+dist_park, data=datareg)
+
+#1.2 Tabla resultados:
+fitlist <- list(m1, m2, m3)
+regs <- outreg(fitlist)
