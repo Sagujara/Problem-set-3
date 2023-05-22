@@ -1,6 +1,6 @@
 # Nicolas Lozano - 
 # Samuel Gutiérrez Jaramillo - 202111674
-# TITULO:
+# Problem set #3 Taller R Uniandes.
 # R 4.2.2
 
 # If not installed run next line:
@@ -8,7 +8,8 @@
 rm(list=ls())
 require(pacman)
 p_load(tidyverse, rio, janitor, ggplot2, skimr, rvest, dplyr, +
-         tidyr, tibble, data.table, stargazer, outreg, coefplot, xlsx)
+         tidyr, tibble, data.table, stargazer, outreg, coefplot, xlsx, +
+         sf, leaflet,tmaptools, osmdata, ggsn, ggmap)
 rm(list=ls())
 
 #1.Regresiones.
@@ -37,4 +38,26 @@ ggsave("output/plot_regresiones.png")
 
 export(regs, "output/resultados_regresiones.xlsx")
 
-#2.
+#2. Datos espaciales:
+#2.1 Descargar datos
+osm <- opq("Ubate Colombia") %>%
+  add_osm_feature(key="amenity" , value="restaurant") 
+osm_sf <- osm %>% osmdata_sf()
+restaurantes <- osm_sf$osm_points %>% select(osm_id,amenity)
+
+osm <- opq("Ubate Colombia") %>%
+  add_osm_feature(key="leisure" , value="park") 
+osm_sf <- osm %>% osmdata_sf()
+parques <- osm_sf$osm_polygons %>% select(osm_id,leisure)
+
+#2.2 Visualizar
+leaflet() %>% addTiles() %>% addCircleMarkers(data=restaurantes, col="blue") %>% addPolygons(data=parques, col="green")
+
+#2.3 Geocodificar sitio: Bicicleteria KIKO
+bici <- geocode_OSM("Calle 6 %7% 7-6, Ubate Colombia", as.sf=T)
+
+#2.4 Mapa
+Ubate <- opq("Ubate Colombia") %>%
+  add_osm_feature(key="amenity" , value="restaurant") %>% add_osm_feature(key="leisure", value="park") %>% osmdata_sf()
+
+  
