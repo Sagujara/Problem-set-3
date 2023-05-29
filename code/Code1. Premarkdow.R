@@ -60,4 +60,20 @@ bici <- geocode_OSM("Calle 6 %7% 7-6, Ubate Colombia", as.sf=T)
 Ubate <- opq("Ubate Colombia") %>%
   add_osm_feature(key="amenity" , value="restaurant") %>% add_osm_feature(key="leisure", value="park") %>% osmdata_sf()
 
+
+#3. Web Scrapping:
+
+#3.1: Objeto HTML
+pag <- "https://es.wikipedia.org/wiki/Departamentos_de_Colombia"
+deptos <- read_html(pag)
   
+#3.2. Titulo de la página:
+titulo <- deptos %>% html_nodes(xpath='//*[@id="firstHeading"]') %>% html_text()
+
+#3.3 Tabla con Deptos de Colombia:
+tabla <- deptos %>% html_nodes(xpath = '//*[@id="mw-content-text"]/div[1]/table[3]') %>% html_table()
+tabla <- as.data.frame(tabla)
+export(tabla, "output/tabla_departamento.xlsx")
+
+#3.4: Nube de palabras
+palabras <- deptos %>% html_nodes("p") %>% html_text()
