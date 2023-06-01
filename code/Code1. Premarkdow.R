@@ -9,7 +9,7 @@ rm(list=ls())
 require(pacman)
 p_load(tidyverse, rio, janitor, ggplot2, skimr, rvest, dplyr, +
          tidyr, tibble, data.table, stargazer, outreg, coefplot, xlsx, +
-         sf, leaflet,tmaptools, osmdata, ggsn, ggmap)
+         sf, leaflet,tmaptools, osmdata, ggsn, ggmap, wordcloud, tidytext, tm)
 rm(list=ls())
 
 #1.Regresiones.
@@ -77,3 +77,7 @@ export(tabla, "output/tabla_departamento.xlsx")
 
 #3.4: Nube de palabras
 palabras <- deptos %>% html_nodes("p") %>% html_text()
+png("output/nube_palabras.png")
+nube <- wordcloud(palabras) 
+dev.off()
+
