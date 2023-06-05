@@ -73,12 +73,12 @@ ggsave("output/plot_regresiones.png", width = 7, height = 5, dpi = 300, units = 
 
 #2. Datos espaciales:
 #2.1 Descargar datos
-osm <- opq("Ubate Colombia") %>%
+osm <- opq("Santa Marta Colombia") %>%
   add_osm_feature(key="amenity" , value="restaurant") 
 osm_sf <- osm %>% osmdata_sf()
 restaurantes <- osm_sf$osm_points %>% select(osm_id,amenity)
 
-osm <- opq("Ubate Colombia") %>%
+osm <- opq("Santa Marta Colombia") %>%
   add_osm_feature(key="leisure" , value="park") 
 osm_sf <- osm %>% osmdata_sf()
 parques <- osm_sf$osm_polygons %>% select(osm_id,leisure)
@@ -93,14 +93,18 @@ leaflet() %>%
 bici <- geocode_OSM("Calle 6 %7% 7-6, Ubate Colombia", as.sf=T)
 
 #2.4 Mapa
-ubate <- opq(bbox = getbb("Ubate Colombia")) %>%
+ubate <- opq(bbox = getbb("Santa_Marta Colombia")) %>%
   add_osm_feature(key="boundary", value="administrative") %>%
   osmdata_sf()
 
-ubate <- ubate$osm_multipolygons %>% subset(admin_level==6)
+ubate <- ubate$osm_multipolygons %>% subset(admin_level==3)
 
 osm_layer <- get_stamenmap(bbox = as.vector(st_bbox(ubate)), 
-                          maptype="toner", source="osm", zoom=13) 
+                          maptype="toner", source="osm", zoom=10) 
+
+ggmap(osm_layer) + geom_sf(data = ubate, inherit.aes=F)+
+  geom_sf(data = parques, colour = 'red',size = 15, inherit.aes = FALSE)+
+  geom_sf(data = restaurantes, colour = 'blue',size = 2, inherit.aes = FALSE)
 
 ggmap(osm_layer) + geom_sf(data = ubate,alpha=0.3, inherit.aes=F) +
   geom_sf(data = parques, colour = 'red',size = 15, inherit.aes = FALSE)+
