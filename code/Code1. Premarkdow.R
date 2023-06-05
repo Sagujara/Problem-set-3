@@ -5,9 +5,9 @@
 
 # If not installed run next line:
 # install.packages("pacman")
+
 rm(list=ls())
 require(pacman)
-<<<<<<< HEAD
 p_load(tidyverse, 
        rio, 
        janitor, 
@@ -21,20 +21,17 @@ p_load(tidyverse,
        stargazer, 
        outreg, 
        coefplot, 
-       xlsx,
        sf, 
        leaflet,
        tmaptools, 
        osmdata, 
        ggsn, 
        ggmap, 
-       modelsummary)
-=======
-p_load(tidyverse, rio, janitor, ggplot2, skimr, rvest, dplyr, +
-         tidyr, tibble, data.table, stargazer, outreg, coefplot, xlsx, +
-         sf, leaflet,tmaptools, osmdata, ggsn, ggmap, wordcloud, tidytext, tm)
-rm(list=ls())
->>>>>>> ceef1bda8ad782f7894b408c89bd2d678ae3b5c3
+       modelsummary, 
+       wordcloud, 
+       tidytext, 
+       tm)
+
 
 #1.Regresiones.
 #Cargar base de datos
@@ -97,28 +94,49 @@ leaflet() %>%
   addPolygons(data=parques, col="green")
 
 #2.3 Geocodificar sitio: Bicicleteria KIKO
-bici <- geocode_OSM("Calle 6 %7% 7-6, Ubate Colombia", as.sf=T)
+direccion <- geocode_OSM("Calle 14, Localidad 3 Turística - Perla del Caribe, Santa Marta, Magdalena, 005075, Colombia", as.sf=T)
 
 #2.4 Mapa
-ubate <- opq(bbox = getbb("Santa_Marta Colombia")) %>%
+santa_marta <- opq(bbox = getbb("Santa_Marta Colombia")) %>%
   add_osm_feature(key="boundary", value="administrative") %>%
   osmdata_sf()
 
-ubate <- ubate$osm_multipolygons %>% subset(admin_level==3)
+santa_marta <- santa_marta$osm_multipolygons %>% subset(admin_level==8)
 
-osm_layer <- get_stamenmap(bbox = as.vector(st_bbox(ubate)), 
-                          maptype="toner", source="osm", zoom=10) 
+osm_layer <- get_stamenmap(bbox = as.vector(st_bbox(santa_marta)), 
+                          maptype="toner", source="osm", zoom=13) 
 
-ggmap(osm_layer) + geom_sf(data = ubate, inherit.aes=F)+
-  geom_sf(data = parques, colour = 'red',size = 15, inherit.aes = FALSE)+
-  geom_sf(data = restaurantes, colour = 'blue',size = 2, inherit.aes = FALSE)
+mapa <- ggmap(osm_layer) + 
+        geom_sf(data = santa_marta,alpha=0.3, inherit.aes=F) +
+        geom_sf(data = parques, 
+                colour = 'green',
+                size = 15, 
+                inherit.aes = FALSE) +
+        geom_sf(data = restaurantes, 
+                colour = 'blue',
+                size = 1, 
+                inherit.aes = FALSE) +
+        geom_sf(data = direccion, 
+                colour = 'yellow',
+                size = 2, 
+                inherit.aes = FALSE) +
+        scale_fill_viridis(option = "D" , 
+                           name = "Variable") +
+        scalebar(data = santa_marta, 
+                 dist = 5, 
+                 transform =T, 
+                 dist_unit = "km", 
+                 box.fill=c("white","black"), 
+                 st.bottom = F, 
+                 st.color = "grey") +
+        north(data = santa_marta, 
+              location = "topright") + 
+        theme_linedraw() +
+        labs(x="" , y="")
 
-ggmap(osm_layer) + geom_sf(data = ubate,alpha=0.3, inherit.aes=F) +
-  geom_sf(data = parques, colour = 'red',size = 15, inherit.aes = FALSE)+
-  geom_sf(data = restaurantes, colour = 'blue',size = 1, inherit.aes = FALSE)+
-  scalebar(data = ubate , dist = 5 , transform = T , dist_unit = "km") +
-  north(data = ubate , location = "topleft") + theme_linedraw() + labs(x="" , y="")
+mapa
 
+ggsave("output/mapa_amenities.png", width = 7, height = 5, dpi = 300, units = "in")
 
 
 #3. Web Scrapping:
