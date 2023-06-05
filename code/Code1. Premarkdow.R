@@ -1,4 +1,4 @@
-# Nicolas Lozano - 
+# Nicolas Lozano - 202021428
 # Samuel Gutiérrez Jaramillo - 202111674
 # Problem set #3 Taller R Uniandes.
 # R 4.2.2
@@ -93,7 +93,7 @@ leaflet() %>%
   addCircleMarkers(data=restaurantes, col="blue") %>% 
   addPolygons(data=parques, col="green")
 
-#2.3 Geocodificar sitio: Bicicleteria KIKO
+#2.3 Geocodificar sitio: Perla
 direccion <- geocode_OSM("Calle 14, Localidad 3 Turística - Perla del Caribe, Santa Marta, Magdalena, 005075, Colombia", as.sf=T)
 
 #2.4 Mapa
@@ -120,8 +120,6 @@ mapa <- ggmap(osm_layer) +
                 colour = 'yellow',
                 size = 2, 
                 inherit.aes = FALSE) +
-        scale_fill_viridis(option = "D" , 
-                           name = "Variable") +
         scalebar(data = santa_marta, 
                  dist = 5, 
                  transform =T, 
