@@ -7,6 +7,7 @@
 # install.packages("pacman")
 rm(list=ls())
 require(pacman)
+<<<<<<< HEAD
 p_load(tidyverse, 
        rio, 
        janitor, 
@@ -28,6 +29,12 @@ p_load(tidyverse,
        ggsn, 
        ggmap, 
        modelsummary)
+=======
+p_load(tidyverse, rio, janitor, ggplot2, skimr, rvest, dplyr, +
+         tidyr, tibble, data.table, stargazer, outreg, coefplot, xlsx, +
+         sf, leaflet,tmaptools, osmdata, ggsn, ggmap, wordcloud, tidytext, tm)
+rm(list=ls())
+>>>>>>> ceef1bda8ad782f7894b408c89bd2d678ae3b5c3
 
 #1.Regresiones.
 #Cargar base de datos
@@ -113,4 +120,24 @@ ggmap(osm_layer) + geom_sf(data = ubate,alpha=0.3, inherit.aes=F) +
   north(data = ubate , location = "topleft") + theme_linedraw() + labs(x="" , y="")
 
 
+
+#3. Web Scrapping:
+
+#3.1: Objeto HTML
+pag <- "https://es.wikipedia.org/wiki/Departamentos_de_Colombia"
+deptos <- read_html(pag)
   
+#3.2. Titulo de la página:
+titulo <- deptos %>% html_nodes(xpath='//*[@id="firstHeading"]') %>% html_text()
+
+#3.3 Tabla con Deptos de Colombia:
+tabla <- deptos %>% html_nodes(xpath = '//*[@id="mw-content-text"]/div[1]/table[3]') %>% html_table()
+tabla <- as.data.frame(tabla)
+export(tabla, "output/tabla_departamento.xlsx")
+
+#3.4: Nube de palabras
+palabras <- deptos %>% html_nodes("p") %>% html_text()
+png("output/nube_palabras.png")
+nube <- wordcloud(palabras) 
+dev.off()
+
